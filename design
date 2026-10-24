@@ -1,0 +1,365 @@
+# Redesign Spec: Egg Freezing App
+
+## Instructions for Replit Agent
+
+Apply this visual redesign to the existing app. Keep all functionality, data models, routes, and business logic as they are. This pass covers styling, layout, component polish, and UI copy.
+
+Work in this order:
+
+1. Add the design tokens (section 2) as CSS variables, and to the Tailwind theme if the project uses Tailwind.
+2. Restyle shared components (section 5).
+3. Restyle each screen (section 8). If a screen listed here doesn't exist yet, skip it. Don't build new features.
+4. Rewrite UI copy using the writing rules (section 7).
+5. Run the acceptance checklist (section 10).
+
+Build mobile-first and meet WCAG AA.
+
+---
+
+## 1. Brand direction
+
+The app should look like a confident lifestyle brand and read like a clinic that gets the details right.
+
+- Use saturated brights (coral, sun yellow, cobalt) anchored by near-black and warm cream. The dark and cream anchors keep the brights looking premium.
+- The tone puts the user in charge of her plan. Avoid pity and avoid hype.
+- Match the energy level to the stakes of each screen:
+  - High energy: onboarding, milestones, streaks, countdowns, empty states.
+  - Calm and precise: medication doses, injection times, trigger shot, lab results, bills, consent forms. Use neutral backgrounds and keep brights to a single button or small tag.
+  - No celebration: bad news such as a low egg count, a cancelled cycle, or a payment problem. No confetti, no bright fills, plain supportive copy.
+
+---
+
+## 2. Color tokens
+
+Every text and background pairing below passes WCAG AA (4.5:1 or higher).
+
+| Token | Hex | Use |
+|---|---|---|
+| `--color-coral` | `#FF5A3C` | Primary brand color. Primary buttons, hero blocks, key highlights |
+| `--color-coral-deep` | `#C2361C` | Coral text and links on light backgrounds (5.2:1 on cream) |
+| `--color-sun` | `#FFD23F` | Secondary bright. Milestones, badges, highlights |
+| `--color-cobalt` | `#2D4BFF` | Cool accent. Charts, tags, secondary actions, info |
+| `--color-ink` | `#1A1A1A` | Primary text, dark surfaces, text on coral and sun |
+| `--color-ink-soft` | `#5C5650` | Secondary text, captions |
+| `--color-cream` | `#FFF8F0` | App background in light mode |
+| `--color-white` | `#FFFFFF` | Cards on cream |
+| `--color-line` | `#EADFD3` | Borders, dividers |
+| `--color-success` | `#1F7A4D` | Confirmations, "on track" |
+| `--color-warning` | `#B54708` | Needs attention soon |
+| `--color-danger` | `#C0262D` | True alerts only, such as "Call your clinic now" |
+
+Rules:
+
+- Text on coral is always ink (`#1A1A1A`). White on coral fails contrast at 3.1:1; ink on coral passes at 5.6:1.
+- Text on sun is ink. Text on cobalt is white.
+- Normal lab values and routine info never use red.
+- One bright (coral or sun) dominates a screen at most. Cobalt is for data and small accents.
+- Medication, results, and billing screens use cream or white backgrounds with ink text. Brights appear only on one CTA or a small tag.
+
+### Dark mode
+
+Required, since many injections happen at night.
+
+| Token | Dark value |
+|---|---|
+| `--color-bg` | `#141210` |
+| `--color-surface` | `#1F1C19` |
+| `--color-text` | `#FFF8F0` |
+| `--color-text-soft` | `#B8AEA4` |
+| `--color-line` | `#332E29` |
+| `--color-coral` | `#FF6B4F` (ink text on it passes at 6.2:1) |
+| `--color-sun` | `#FFD23F` |
+| `--color-cobalt` | `#7B8CFF` |
+
+Follow `prefers-color-scheme` and add a manual toggle in settings.
+
+---
+
+## 3. Typography
+
+Load from Google Fonts:
+
+```html
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,800&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,700&display=swap" rel="stylesheet">
+```
+
+- Headlines use Bricolage Grotesque at weight 800 for big moments and 600 for section titles, with `letter-spacing: -0.02em`. Write headlines in sentence case or lowercase, never all caps.
+- Body and UI text use DM Sans at 400, 500, or 700.
+- Every number (doses, times, follicle sizes in mm, dollar amounts) uses `font-variant-numeric: tabular-nums`. Doses are large enough that 150 IU can't be misread as 1.50.
+
+| Style | Font | Size / line-height | Weight |
+|---|---|---|---|
+| Display | Bricolage | 40 / 44 | 800 |
+| H1 | Bricolage | 32 / 36 | 800 |
+| H2 | Bricolage | 24 / 30 | 600 |
+| H3 | DM Sans | 18 / 24 | 700 |
+| Body | DM Sans | 16 / 24 | 400 |
+| Small | DM Sans | 14 / 20 | 400 |
+| Label / tag | DM Sans | 12 / 16 | 700, `letter-spacing: 0.04em`, uppercase allowed here only |
+| Dose number | DM Sans | 36 / 40 | 700, tabular-nums |
+
+Body text is at least 16px. Nothing goes below 12px.
+
+---
+
+## 4. Shape, spacing, elevation
+
+- Spacing scale (px): 4, 8, 12, 16, 24, 32, 48, 64. Side padding is 20px on mobile and 32px on tablet and up.
+- Radius: cards 24px, buttons 999px (full pill), inputs 16px, tags 999px, images 28px.
+- Shadows stay minimal. Prefer flat color blocks and borders. Cards use `0 1px 2px rgba(26,26,26,0.06)`.
+- Graphic motif: large soft circles and pill shapes in coral, sun, or cobalt, cropped off the edge of hero sections or placed behind photos. Use one per screen at most, and none on medication, results, or billing screens.
+- Each screen has one primary action, generous white space, and one dominant headline.
+
+---
+
+## 5. Components
+
+### Buttons
+
+- Primary: coral background, ink text, pill shape, 52px tall, DM Sans 700 at 16px. Darken 8% when pressed.
+- Secondary: transparent background, 2px ink border, ink text, pill shape.
+- Text link: coral-deep, underlined on hover and focus.
+- Destructive: danger-colored outline. Fill it only on the final confirmation step.
+- Buttons are full-width on mobile. Focus ring is `0 0 0 3px var(--color-cobalt)` with a 2px offset.
+
+### Cards
+
+- White on cream (surface on bg in dark mode), 24px radius, 20 to 24px padding, 1px `--color-line` border.
+- Hero cards for milestones and countdowns use a solid coral or sun background, ink text, and a large Bricolage number or headline.
+
+### Tags and status chips
+
+Pill shape using the label text style. Variants:
+
+- neutral: line-colored background
+- info: 12% cobalt tint with cobalt text
+- success
+- warning
+- danger, for true alerts only
+
+### Inputs
+
+16px radius, 52px tall, 1.5px `--color-line` border, cobalt border on focus. Labels sit above the field and stay visible. Don't use placeholder text as the only label.
+
+### Progress
+
+Show cycle progress as a thick rounded bar or ring in coral on a line-colored track, with the day count in large tabular numerals.
+
+### Bottom navigation (mobile)
+
+Four or five items at most, for example Today, Cycle, Meds, Costs, Profile (adapt to the existing routes). The active item gets an ink icon and label with a small coral dot or pill indicator. The bar uses the surface color with a top border in the line color.
+
+### Icons
+
+Rounded icons in filled or duotone style (Phosphor "fill" or "duotone", or Lucide with a 2px stroke and rounded joins). Use an abstract droplet or pill shape for doses. No sharp clinical line art and no realistic needles or syringes.
+
+### Motion
+
+- UI transitions run 150 to 250ms with ease-out.
+- Celebration animations appear in three places only: logging an injection (a quick scale and check), completing a stim day, and the retrieval countdown reaching zero. A small coral and sun burst is fine there.
+- Respect `prefers-reduced-motion`.
+
+---
+
+## 6. Imagery
+
+- Photography is editorial, natural-light portraits of real, diverse people: different races, body types, ages 25 to 42, queer couples, single women, and cancer patients. They look styled, candid, and confident. Avoid smiling-doctor stock photos.
+- Crop photos into rounded rectangles or circles, with a color-block shape behind or overlapping them.
+- If there are no photos, use flat illustration in the palette: abstract cells and circles, sun and moon shapes for time and cycles, botanicals.
+- Never use babies, pregnant bellies, realistic anatomy, needles or syringes, literal chicken eggs, or distressed imagery.
+- Until real photography exists, use solid color blocks with a soft circle shape as placeholders. Don't pull random stock photos.
+
+---
+
+## 7. Writing rules for all UI copy
+
+All copy follows the No AI Slop guidelines (github.com/petergyang/no-ai-slop). The voice is a smart friend who works as a fertility nurse: direct, warm, a little bold, and exact about medical facts.
+
+### Principles
+
+- Lead with the point. Put the drug, dose, time, or dollar amount first.
+- Be concrete: names, numbers, dates, times. "Gonal-F, 225 IU, 8:00 PM" beats "Time for your evening medication."
+- Use active voice, with people doing the actions: "Your clinic will call you by 3 PM."
+- Apply the portability test. If a line could appear unchanged in any health app, rewrite it with something specific to this user's cycle, or cut it.
+- Repeat the clear word. If it's "retrieval" on one screen, it's "retrieval" everywhere. Don't rotate synonyms like "procedure" or "collection."
+- Don't invent stats, claims, or "studies show" lines. Name the source, or leave it out.
+
+### Banned words
+
+delve, foster, leverage, utilize, facilitate, empower, streamline, robust, cutting-edge, paradigm shift, game changer, tapestry, realm, beacon, multifaceted, meticulous, intricate, paramount, transformative, elevate, embark, supercharge, harness, ever-evolving.
+
+Cut these when they add nothing: just, literally, honestly, simply, actually, truly, fundamentally, importantly, crucially, it's worth noting, it's important to note, at the end of the day, when it comes to, at its core, in today's world, the reality is, in order to, going forward, let's dive in.
+
+### Banned patterns
+
+- "Not X, it's Y" contrasts. State Y.
+- Throat-clearing openers like "Here's the thing" or "Let's talk about your results." Make the point.
+- Colon reveals like "Your next step: freedom." Write a plain sentence.
+- Stacked dramatic fragments like "Your eggs. Your timeline. Your choice." Write one complete sentence.
+- Rhetorical questions and setups like "Ready to take the next step?" or "What if you could..."
+- Importance puffery like "a pivotal moment in your journey." State the fact.
+- Fake-profound closers and recap endings on screens or emails. End on the next action.
+- Formatting slop: no emoji in headings, no mid-sentence bold, no bullets where a sentence works.
+- Em dashes: none in UI copy. Use a period or comma.
+
+### Examples
+
+| Context | Use | Avoid |
+|---|---|---|
+| Milestone | "Stim day 6 done. 4 to 6 days left." | "Yay!! Your eggies are growing 🥚💕" |
+| Med reminder | "Gonal-F, 225 IU, 8:00 PM" | "Time for your magic shot!" |
+| Trigger shot | "Trigger shot tonight at 10:30 PM exactly. Set two alarms." | Anything playful |
+| Bill | "Estimated total: $14,200. Medications and anesthesia are billed separately." | "Investing in future you! 💸" |
+| Low result | "Dr. Patel will go over next steps with you on Thursday." | Celebration styling, vague reassurance |
+| Onboarding headline | "Freeze your eggs on your schedule." | "Your eggs. Your timeline. Your choice." |
+| Empty state | "No appointments yet. Your clinic adds them after your first consult." | "Nothing to see here... yet! ✨" |
+
+### Other copy rules
+
+- Sentence case everywhere.
+- No emoji in medical, billing, or results copy.
+- Notifications are discreet by default ("You have a reminder") with no drug names on the lock screen. Add a setting to show details.
+
+---
+
+## 8. Screens
+
+Apply to whichever of these exist.
+
+1. Welcome and onboarding. High energy. Full-bleed coral or sun hero, a large Bricolage headline (for example "Freeze your eggs on your schedule."), one circle motif, one photo, one pill CTA.
+2. Today (home). A greeting, then a hero card with the cycle day in large tabular numerals and a progress bar. Below it, today's meds as calm white cards showing drug, dose in large numerals, time, and a "Log it" button. Then the next appointment card. One milestone card at most.
+3. Cycle timeline. A vertical step list: Consult, Testing, Stim, Trigger, Retrieval, Freeze, Storage. Completed steps get an ink check, the current step a coral pill, upcoming steps ink-soft text. No decoration.
+4. Medications and injection log. Calm mode: cream background, white cards, large dose numerals, clear times. Coral appears only on the "Log" button. Play the check animation when a dose is logged.
+5. Monitoring and results. Calm mode. A plain-language summary at the top, then follicle sizes in a simple chart (cobalt bars or dots, labeled in mm). No red unless something is clinically urgent.
+6. Trigger shot. The highest-precision screen: ink on white, a very large time display, a countdown, and a "Set alarm" button. No decoration.
+7. Retrieval day. A countdown hero (sun background is fine) and a checklist covering fasting, a ride home, and arrival time. Results afterward go in a calm card.
+8. Costs and billing. Calm mode. Itemize by payer (clinic, pharmacy, anesthesia, storage), show totals in large tabular numerals, and label each line with a status chip (Paid, Due, Estimate). Coral appears only on the "Pay" CTA.
+9. Storage. One card showing eggs stored, location, renewal date, and annual fee.
+10. Profile and settings. A standard list, including the dark mode toggle and the discreet notifications toggle.
+
+---
+
+## 9. Implementation
+
+### CSS variables
+
+```css
+:root {
+  --color-coral: #FF5A3C;
+  --color-coral-deep: #C2361C;
+  --color-sun: #FFD23F;
+  --color-cobalt: #2D4BFF;
+  --color-ink: #1A1A1A;
+  --color-ink-soft: #5C5650;
+  --color-bg: #FFF8F0;
+  --color-surface: #FFFFFF;
+  --color-text: #1A1A1A;
+  --color-text-soft: #5C5650;
+  --color-line: #EADFD3;
+  --color-success: #1F7A4D;
+  --color-warning: #B54708;
+  --color-danger: #C0262D;
+
+  --font-display: "Bricolage Grotesque", system-ui, sans-serif;
+  --font-body: "DM Sans", system-ui, sans-serif;
+
+  --radius-card: 24px;
+  --radius-input: 16px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(26, 26, 26, 0.06);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --color-bg: #141210;
+    --color-surface: #1F1C19;
+    --color-text: #FFF8F0;
+    --color-text-soft: #B8AEA4;
+    --color-line: #332E29;
+    --color-coral: #FF6B4F;
+    --color-cobalt: #7B8CFF;
+  }
+}
+:root[data-theme="dark"] {
+  --color-bg: #141210;
+  --color-surface: #1F1C19;
+  --color-text: #FFF8F0;
+  --color-text-soft: #B8AEA4;
+  --color-line: #332E29;
+  --color-coral: #FF6B4F;
+  --color-cobalt: #7B8CFF;
+}
+
+body {
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+h1, h2, .display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+.num { font-variant-numeric: tabular-nums; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+```
+
+### Tailwind
+
+```js
+// tailwind.config.js, inside theme.extend
+colors: {
+  coral: { DEFAULT: 'var(--color-coral)', deep: 'var(--color-coral-deep)' },
+  sun: 'var(--color-sun)',
+  cobalt: 'var(--color-cobalt)',
+  ink: { DEFAULT: 'var(--color-ink)', soft: 'var(--color-ink-soft)' },
+  bg: 'var(--color-bg)',
+  surface: 'var(--color-surface)',
+  line: 'var(--color-line)',
+  success: 'var(--color-success)',
+  warning: 'var(--color-warning)',
+  danger: 'var(--color-danger)',
+},
+fontFamily: {
+  display: ['"Bricolage Grotesque"', 'system-ui', 'sans-serif'],
+  sans: ['"DM Sans"', 'system-ui', 'sans-serif'],
+},
+borderRadius: {
+  card: '24px',
+  input: '16px',
+},
+```
+
+---
+
+## 10. Acceptance checklist
+
+Visual:
+
+- [ ] Tokens implemented, with no hard-coded hex values left in components
+- [ ] Bricolage Grotesque and DM Sans loaded, and every number uses tabular-nums
+- [ ] No white text on coral anywhere
+- [ ] Medication, trigger, results, and billing screens use calm mode
+- [ ] Red appears only on true alerts
+- [ ] Dark mode works from the system setting and the manual toggle
+- [ ] All text meets 4.5:1 contrast, focus states are visible, tap targets are at least 44px
+- [ ] `prefers-reduced-motion` is respected
+- [ ] No babies, bellies, needles, anatomy, or chicken-egg imagery
+
+Copy (search the codebase for these):
+
+- [ ] No banned words from section 7
+- [ ] No em dashes in UI strings
+- [ ] No "not X, it's Y" lines, rhetorical questions, or stacked fragments
+- [ ] No emoji in headings or in medical, billing, or results copy
+- [ ] Each term (retrieval, stim, trigger) is used the same way on every screen
+- [ ] Every reminder and bill line leads with the specific drug, dose, time, or amount
+
+Scope:
+
+- [ ] No functionality, routes, or data logic changed
